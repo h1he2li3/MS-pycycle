@@ -1,6 +1,6 @@
 import openmdao.api as om
 
-# from pycycle.thermo.cea import species_data # not used anywhere so i disabled to see if this what is causing the error not to generate N2 diagram
+from pycycle.thermo.cea import species_data
 from pycycle.constants import THERMO_DEFAULT_COMPOSITIONS
 from pycycle.elements.ambient import Ambient
 from pycycle.elements.flow_start import FlowStart
@@ -41,7 +41,7 @@ class FlightConditions(Element):
         reactant = self.options["reactant"]
 
         if reactant is not False:
-            # just make a local ThermoAdd, since the FS (FlowStart) will make the real one for us later
+            # just make a local ThermoAdd, since the FS will make the real one for us later
             thermo_add = ThermoAdd(
                 method=thermo_method,
                 mix_mode="reactant",
@@ -68,10 +68,9 @@ class FlightConditions(Element):
         # composition = self.Fl_O_data['Fl_O']
         composition = self.options["composition"]
 
-        # dTs is the delta from standard day temperature. alt is the altitude at which we are going to extract the Ts, Ps, and rhos
         self.add_subsystem("ambient", Ambient(), promotes=("alt", "dTs"))  # inputs
 
-        conv = self.add_subsystem("conv", om.Group(), promotes=["*"])  # promotes all
+        conv = self.add_subsystem("conv", om.Group(), promotes=["*"])
         if reactant is not False:
             proms = ["Fl_O:*", "MN", "W", mix_ratio_name]
         else:
