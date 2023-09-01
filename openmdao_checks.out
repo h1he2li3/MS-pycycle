@@ -1,0 +1,37 @@
+INFO: checking out_of_order
+INFO: checking system
+INFO: checking solvers
+INFO: checking dup_inputs
+WARNING: The following components have multiple inputs connected to the same source, which can introduce unnecessary data transfer overhead:
+   DESIGN.burner.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to DESIGN.comp.real_flow.flow.Fl_O:tot:composition
+   DESIGN.comp.flow_in has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to DESIGN.inlet.real_flow.flow.Fl_O:tot:composition
+   DESIGN.inlet.flow_in has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to DESIGN.fc.conv.fs.totals.flow.Fl_O:tot:composition
+   DESIGN.nozz.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to DESIGN.turb.real_flow.flow.Fl_O:tot:composition
+   DESIGN.nozz.mux has inputs ['MN:W', 'Ps:W'] connected to DESIGN.turb.out_stat.flow_static.Fl_O:stat:W
+   DESIGN.nozz.mux has inputs ['Ps:P', 'Ps_calc'] connected to DESIGN.nozz.press_calcs.Ps_calc
+   DESIGN.turb.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to DESIGN.burner.vitiated_flow.flow.Fl_O:tot:composition
+   OD0.burner.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD0.comp.real_flow.flow.Fl_O:tot:composition
+   OD0.comp.flow_in has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD0.inlet.real_flow.flow.Fl_O:tot:composition
+   OD0.inlet.flow_in has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD0.fc.conv.fs.totals.flow.Fl_O:tot:composition
+   OD0.nozz.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD0.turb.real_flow.flow.Fl_O:tot:composition
+   OD0.nozz.mux has inputs ['MN:W', 'Ps:W'] connected to OD0.turb.out_stat.flow_static.Fl_O:stat:W
+   OD0.nozz.mux has inputs ['Ps:P', 'Ps_calc'] connected to OD0.nozz.press_calcs.Ps_calc
+   OD0.turb.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD0.burner.vitiated_flow.flow.Fl_O:tot:composition
+   OD1.burner.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD1.comp.real_flow.flow.Fl_O:tot:composition
+   OD1.comp.flow_in has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD1.inlet.real_flow.flow.Fl_O:tot:composition
+   OD1.inlet.flow_in has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD1.fc.conv.fs.totals.flow.Fl_O:tot:composition
+   OD1.nozz.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD1.turb.real_flow.flow.Fl_O:tot:composition
+   OD1.nozz.mux has inputs ['MN:W', 'Ps:W'] connected to OD1.turb.out_stat.flow_static.Fl_O:stat:W
+   OD1.nozz.mux has inputs ['Ps:P', 'Ps_calc'] connected to OD1.nozz.press_calcs.Ps_calc
+   OD1.turb.in_flow has inputs ['Fl_I:stat:composition', 'Fl_I:tot:composition'] connected to OD1.burner.vitiated_flow.flow.Fl_O:tot:composition
+
+INFO: checking missing_recorders
+WARNING: The Problem has no recorder of any kind attached
+INFO: checking unserializable_options
+INFO: checking comp_has_no_outputs
+WARNING: The following Components do not have any outputs:
+   DESIGN.turb.blds
+   OD0.turb.blds
+   OD1.turb.blds
+
+INFO: checking auto_ivc_warnings
