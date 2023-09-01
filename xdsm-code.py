@@ -253,22 +253,25 @@ if __name__ == "__main__":
     # OpenMDAO command to check the problem setup
     prob.setup(check=False)
 
-    # Define the design point
-    prob.set_val("DESIGN.fc.alt", 0, units="ft")  # Design
-    prob.set_val("DESIGN.fc.MN", 0.000001)
-    prob.set_val("DESIGN.balance.Fn_target", 11800.0, units="lbf")
-    prob.set_val("DESIGN.balance.T4_target", 2370.0, units="degR")
-    prob.set_val("DESIGN.comp.PR", 13.5)
-    prob.set_val("DESIGN.comp.eff", 0.83)
-    prob.set_val("DESIGN.turb.eff", 0.86)
+    # Define the design points variables
+    prob.set_val("DESIGN.fc.alt", 0, units="ft")  # Altitude
+    prob.set_val("DESIGN.fc.MN", 0.000001)  # Mach Number
+    prob.set_val("DESIGN.balance.Fn_target", 11800.0, units="lbf")  # Target Force
+    prob.set_val(
+        "DESIGN.balance.T4_target", 2370.0, units="degR"
+    )  # Target Temperature that shouldn't be exceeded
+    prob.set_val("DESIGN.comp.PR", 13.5)  # Pressure Ratio in Compressor
+    prob.set_val("DESIGN.comp.eff", 0.83)  # Compressor efficiency
+    prob.set_val("DESIGN.turb.eff", 0.86)  # Turbine efficienc
 
     # Set initial guesses for balances
-    prob["DESIGN.balance.FAR"] = 0.0175506829934
+    prob["DESIGN.balance.FAR"] = 0.0175506829934  # Fuel-Air Ratio
     prob["DESIGN.balance.W"] = 168.453135137
     prob["DESIGN.balance.turb_PR"] = 4.46138725662
     prob["DESIGN.fc.balance.Pt"] = 14.6955113159
     prob["DESIGN.fc.balance.Tt"] = 518.665288153
 
+    # Define the off-design initial conditions
     for i, pt in enumerate(mp_turbojet.od_pts):
         # initial guesses
         prob[pt + ".balance.W"] = 166.073
@@ -281,7 +284,8 @@ if __name__ == "__main__":
     # Just trying to measure the amount of time taken for the problem to run. `st` means the start time.
     st = time.time()
 
-    prob.set_solver_print(level=-1)
+    # Printing the levels of output
+    # prob.set_solver_print(level=-1) #Commented out because the next line overrides this one
     prob.set_solver_print(level=2, depth=1)
 
     # prob.model.OD1.nonlinear_solver.options['maxiter'] = 1
@@ -295,8 +299,6 @@ if __name__ == "__main__":
         viewer(prob, pt)
 
     map_plots(prob, "DESIGN")
-
-    print()
-
     # This is where the time between start and current time is printed i.e. time.time() is current time at this line and st is the recorded value previously.
+    print()
     print("time", time.time() - st)

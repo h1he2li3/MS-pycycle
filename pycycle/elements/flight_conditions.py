@@ -69,7 +69,9 @@ class FlightConditions(Element):
         composition = self.options["composition"]
 
         # dTs is the delta from standard day temperature. alt is the altitude at which we are going to extract the Ts, Ps, and rhos
-        self.add_subsystem("ambient", Ambient(), promotes=("alt", "dTs"))  # inputs
+        self.add_subsystem(
+            "ambient", Ambient(), promotes=("alt", "dTs")
+        )  # alt and dTs are inputs
 
         conv = self.add_subsystem("conv", om.Group(), promotes=["*"])  # promotes all
         if reactant is not False:

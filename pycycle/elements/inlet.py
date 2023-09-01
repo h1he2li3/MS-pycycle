@@ -88,6 +88,7 @@ class Calcs(om.ExplicitComponent):
 
     def compute(self, inputs, outputs):
         outputs["Pt_out"] = inputs["Pt_in"] * inputs["ram_recovery"]
+        # TODO find out the unit of 'g_c', because therer is not unit in constants.py
         outputs["F_ram"] = inputs["W_in"] * inputs["V_in"] / g_c
 
     def compute_partials(self, inputs, J):
@@ -137,10 +138,8 @@ class Inlet(Element):
             "statics", default=True, desc="If True, calculate static properties."
         )
 
-        self.default_des_od_conns = [
-            # (design src, off-design target)
-            ("Fl_O:stat:area", "area"),
-        ]
+        # (design src, off-design target)
+        self.default_des_od_conns = [("Fl_O:stat:area", "area")]
 
         super().initialize()
 
@@ -196,7 +195,6 @@ class Inlet(Element):
         if statics:
             if design:
                 #   Calculate static properties
-
                 out_stat = Thermo(
                     mode="static_MN",
                     fl_name="Fl_O:stat",
@@ -244,7 +242,6 @@ class Inlet(Element):
                 self.connect("Fl_O:tot:h", "out_stat.ht")
                 self.connect("Fl_O:tot:P", "out_stat.guess:Pt")
                 self.connect("Fl_O:tot:gamma", "out_stat.guess:gamt")
-
         else:
             self.add_subsystem(
                 "W_passthru",
@@ -283,4 +280,5 @@ class Inlet(Element):
 # prob.run_model()
 
 # # Print the N2 diagram
+
 # prob.model.list_model()
