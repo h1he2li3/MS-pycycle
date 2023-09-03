@@ -40,8 +40,9 @@ class FlightConditions(Element):
         thermo_data = self.options["thermo_data"]
         reactant = self.options["reactant"]
 
-        if reactant is not False:
+        if reactant is not False:  # This means reactant is mixed into the flow.
             # just make a local ThermoAdd, since the FS (FlowStart) will make the real one for us later
+            # Local ThermoAdd object created to handle thermodynamics of handling a reactant addition. Configured with various parameters like method (CEA, TABULAR), thermodynamic data, composition of the inflow and composition of the reactant.
             thermo_add = ThermoAdd(
                 method=thermo_method,
                 mix_mode="reactant",
@@ -51,12 +52,14 @@ class FlightConditions(Element):
                     "mix_composition": reactant,
                 },
             )
-
+            # Output flow port Fl_0 is initialized to consider the fuel air mixing.
             self.init_output_flow("Fl_O", thermo_add)
 
-        else:
+        else:  # Without fuel mixing option. Just takes the composition of the airflow in. FAR = 0 in case of TABULAR and composition is some air comosition if CEA.
             if composition is None:
-                composition = THERMO_DEFAULT_COMPOSITIONS[thermo_method]
+                composition = THERMO_DEFAULT_COMPOSITIONS[
+                    thermo_method
+                ]  # Takes in the composition based on the thermo_method.
             self.init_output_flow("Fl_O", composition)
 
     def setup(self):
@@ -145,6 +148,7 @@ if __name__ == "__main__":
     p1 = om.Problem()
     p1.model = om.Group()
 
+    # The whole deal about connecting IndepVarComp() is avoided in newer versions of OpenMDAO and the whole connection can also be ignored.
     des_vars = p1.model.add_subsystem("des_vars", om.IndepVarComp())
     des_vars.add_output("W", 0.0, units="lbm/s")
     des_vars.add_output("alt", 1.0, units="ft")
