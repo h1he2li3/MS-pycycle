@@ -18,10 +18,10 @@ class PR_bal(om.ImplicitComponent):
     """
 
     def setup(self):
-        self.add_input("Ps_exhaust", val=5.0, units="lbf/inch**2", desc="Exhaust static pressure",)
-        self.add_input("Ps_calc", val=5.0, units="lbf/inch**2", desc="Calculated exhaust static pressure",)
+        self.add_input("Ps_exhaust", val=5.0, units="lbf/inch**2", desc="Exhaust static pressure")
+        self.add_input("Ps_calc", val=5.0, units="lbf/inch**2", desc="Calculated exhaust static pressure")
 
-        self.add_output("PR", val=2.0, lower=1.000001, units=None, desc="Total-to-staic pressure ratio",)
+        self.add_output("PR", val=2.0, lower=1.000001, units=None, desc="Total-to-staic pressure ratio")
 
         self.declare_partials("PR", "Ps_exhaust", val=1.0)
         self.declare_partials("PR", "Ps_calc", val=-1.0)
@@ -40,13 +40,13 @@ class PressureCalcs(om.ExplicitComponent):
 
     def setup(self):
         # inputs
-        self.add_input("Pt_in", val=10.0, units="lbf/inch**2", desc="Entrance total pressure",)
-        self.add_input("PR", val=2.0, desc="Total-to-static pressure ratio",)
-        self.add_input("dPqP", val=0.0, desc="Total pressure loss from inlet to throat",)
+        self.add_input("Pt_in", val=10.0, units="lbf/inch**2", desc="Entrance total pressure")
+        self.add_input("PR", val=2.0, desc="Total-to-static pressure ratio")
+        self.add_input("dPqP", val=0.0, desc="Total pressure loss from inlet to throat")
 
         # outputs
-        self.add_output("Pt_th", shape=1, units="lbf/inch**2", desc="Throat total pressure", lower=1e-3,)
-        self.add_output("Ps_calc", val=5.0, units="lbf/inch**2", desc="Calculated exhaust static pressure",)
+        self.add_output("Pt_th", shape=1, units="lbf/inch**2", desc="Throat total pressure", lower=1e-3)
+        self.add_output("Ps_calc", val=5.0, units="lbf/inch**2", desc="Calculated exhaust static pressure")
 
         self.declare_partials("Pt_th", ["Pt_in", "dPqP"])
         self.declare_partials("Ps_calc", ["Pt_in", "PR", "dPqP"])
@@ -149,6 +149,7 @@ class Mux(om.ExplicitComponent):
         nozzType = self.options["nozzType"]
         fl_out_name = self.options["fl_out_name"]
 
+        # Just checking to see if Nozzle type is one of the available options.
         if not (nozzType in ["CV", "CD", "CD_CV"]):
             msg = "nozzType must be 'CV', 'CD' or 'CD_CV', but '{}' was given.".format(nozzType)
             raise ValueError(msg)
@@ -175,6 +176,7 @@ class Mux(om.ExplicitComponent):
         self.add_output("choked", shape=1, desc="Flag for choked flow")
 
         for prefix in ("Throat", fl_out_name):
+            # Throat:stat:h # [fl_out_name]:stat:h
             self.add_output("%s:stat:h" % prefix, shape=1, desc="static enthalpy", units="Btu/lbm")
             self.add_output("%s:stat:T" % prefix, shape=1, desc="static temperature", units="degR")
             self.add_output("%s:stat:P" % prefix, shape=1, desc="static pressure", units="lbf/inch**2")
@@ -217,11 +219,11 @@ class Mux(om.ExplicitComponent):
                 prefix = "Ps"
 
             for p in self.flow_out:
-                outputs["Throat:stat:%s" % p] = inputs["%s:%s" % (prefix, p)]
-                outputs["%s:stat:%s" % (fl_out_name, p)] = inputs["%s:%s" % (prefix, p)]
+                outputs["Throat:stat:%s" % p] = inputs["%s:%s" % (prefix, p)] # Throat:stat:T = MN:T # Throat:stat:h = MN:h
+                outputs["%s:stat:%s" % (fl_out_name, p)] = inputs["%s:%s" % (prefix, p)] # Exit:stat:T = MN:T # fl_out_name:stat:h = MN:h
 
             outputs["Throat:stat:S"] = inputs["S"]
-            outputs["%s:stat:S" % fl_out_name] = inputs["S"]
+            outputs["%s:stat:S" % fl_out_name] = inputs["S"] #Exit:stat:S
 
         elif nozzType == "CD":
             for p in self.flow_out:
@@ -299,14 +301,8 @@ class Nozzle(Element):
     """
 
     def initialize(self):
-        self.options.declare(
-            "nozzType", default="CV", desc="Nozzle type: CD, CV, or CD_CV."
-        )
-        self.options.declare(
-            "lossCoef",
-            default="Cv",
-            desc='If set to "Cfg", then Gross Thrust Coefficient is an input.',
-        )
+        self.options.declare("nozzType", default="CV", desc="Nozzle type: CD, CV, or CD_CV.")
+        self.options.declare("lossCoef", default="Cv", desc='If set to "Cfg", then Gross Thrust Coefficient is an input.',)
         self.options.declare("internal_solver", default=False)
 
         super().initialize()

@@ -95,7 +95,7 @@ HP_per_RPM_to_FT_LBF = 5252.11
 R_UNIVERSAL_SI = 8314.4598  # (m**3 * Pa)/(mol*degK)
 R_UNIVERSAL_ENG = 1.9872035  # (Btu lbm)/(mol*degR)
 
-g_c = 32.174
+g_c = 32.174 # Gravitational acceleration in ft2 per s
 
 MIN_VALID_CONCENTRATION = 1e-10
 
