@@ -55,9 +55,7 @@ class Combustor(Element):
     """
 
     def initialize(self):
-        self.options.declare(
-            "statics", default=True, desc="If True, calculate static properties."
-        )
+        self.options.declare("statics", default=True, desc="If True, calculate static properties.")
         self.options.declare("fuel_type", default="JP-7", desc="Type of fuel.")
 
         super().initialize()
@@ -67,12 +65,8 @@ class Combustor(Element):
         thermo_data = self.options["thermo_data"]
         fuel_type = self.options["fuel_type"]
 
-        self.thermo_add_comp = ThermoAdd(
-            method=thermo_method,
-            mix_mode="reactant",
-            thermo_kwargs={
-                "spec": thermo_data,
-                "inflow_composition": self.Fl_I_data["Fl_I"],
+        self.thermo_add_comp = ThermoAdd(method=thermo_method, mix_mode="reactant",
+            thermo_kwargs={"spec": thermo_data, "inflow_composition": self.Fl_I_data["Fl_I"],
                 "mix_composition": fuel_type,
             },
         )

@@ -9,32 +9,51 @@ from pycycle.element_base import Element
 
 
 class FlightConditions(Element):
-    """Determines total and static flow properties given an altitude and Mach number using the input atmosphere model"""
+    """Determines total and static flow properties given an altitude and Mach number using the input atmosphere model
+
+    Flows are apparently divided into: primary and
+
+    Framework:
+    ---------
+    def initialize():, def pyc_setup_output_ports():, def setup(): under FlightConditions
+    Just MainClass with some outside imports
+
+    Inputs:
+    ------
+
+    MN = Mach Number []
+    alt = Altitude [ft]
+    W = [ft/s]
+    dTs = [degR]
+
+
+
+    """
 
     def initialize(self):
+        """
+        Here, compositionm, reactant and mix_ratio_name options are declared.
+
+        composition means the composition of the inlet flow whether air or fuel/air mixture.
+        reactant is of two types: bool and str. bool is False, then no air and fuel is mixed, and flow is just air.
+        mix_ratio is the input that governs the amount of fuel that is mixed into the primary flow.
+        """
         # Composition of fluid flow as in fuel-air mixture or just fuel or just air?
-        self.options.declare(
-            "composition",
-            default=None,
-            desc="composition of the flow. If None, default for thermo package is used",
-        )
+        self.options.declare("composition", default=None,
+            desc="composition of the flow. If None, default for thermo package is used",)
         # Base composition mean the composition of the fuel?
-        self.options.declare(
-            "reactant",
-            default=False,
-            types=(bool, str),
+        self.options.declare("reactant", default=False, types=(bool, str),
             desc="If False, flow matches base composition. If a string, then that reactant "
-            "is mixed into the flow at at the ratio set by the `mix_ratio` input",
-        )
-        self.options.declare(
-            "mix_ratio_name",
-            default="mix:ratio",
-            desc="The name of the input that governs the mix ratio of the reactant to the primary flow",
-        )
+            "is mixed into the flow at at the ratio set by the `mix_ratio` input",)
+        self.options.declare("mix_ratio_name", default="mix:ratio",
+            desc="The name of the input that governs the mix ratio of the reactant to the primary flow",)
 
         super().initialize()
 
     def pyc_setup_output_ports(self):
+        """
+
+        """
         composition = self.options["composition"]
         thermo_method = self.options["thermo_method"]
         thermo_data = self.options["thermo_data"]
@@ -44,22 +63,17 @@ class FlightConditions(Element):
             # just make a local ThermoAdd, since the FS (FlowStart) will make the real one for us later
             # Local ThermoAdd object created to handle thermodynamics of handling a reactant addition. Configured with various parameters like method (CEA, TABULAR), thermodynamic data, composition of the inflow and composition of the reactant.
             thermo_add = ThermoAdd(
-                method=thermo_method,
-                mix_mode="reactant",
+                method=thermo_method, mix_mode="reactant",
                 thermo_kwargs={
                     "spec": thermo_data,
                     "inflow_composition": composition,
-                    "mix_composition": reactant,
-                },
-            )
+                    "mix_composition": reactant,},)
             # Output flow port Fl_0 is initialized to consider the fuel air mixing.
             self.init_output_flow("Fl_O", thermo_add)
 
         else:  # Without fuel mixing option. Just takes the composition of the airflow in. FAR = 0 in case of TABULAR and composition is some air comosition if CEA.
             if composition is None:
-                composition = THERMO_DEFAULT_COMPOSITIONS[
-                    thermo_method
-                ]  # Takes in the composition based on the thermo_method.
+                composition = THERMO_DEFAULT_COMPOSITIONS[thermo_method]  # Takes in the composition based on the thermo_method.
             self.init_output_flow("Fl_O", composition)
 
     def setup(self):
@@ -72,47 +86,28 @@ class FlightConditions(Element):
         composition = self.options["composition"]
 
         # dTs is the delta from standard day temperature. alt is the altitude at which we are going to extract the Ts, Ps, and rhos
-        self.add_subsystem(
-            "ambient", Ambient(), promotes=("alt", "dTs")
-        )  # alt and dTs are inputs
+        self.add_subsystem("ambient", Ambient(), promotes=("alt", "dTs"))  # alt and dTs are inputs
 
         conv = self.add_subsystem("conv", om.Group(), promotes=["*"])  # promotes all
         if reactant is not False:
             proms = ["Fl_O:*", "MN", "W", mix_ratio_name]
         else:
             proms = ["Fl_O:*", "MN", "W"]
-        fs_start = conv.add_subsystem(
-            "fs",
+        fs_start = conv.add_subsystem("fs",
             FlowStart(
                 thermo_method=thermo_method,
                 thermo_data=thermo_data,
                 composition=composition,
                 reactant=reactant,
                 mix_ratio_name=mix_ratio_name,
-            ),
-            promotes=proms,
-        )
+            ), promotes=proms,)
 
         # need to manually call this in this setup, because we have an element within an element
         fs_start.pyc_setup_output_ports()
 
         balance = conv.add_subsystem("balance", om.BalanceComp())
-        balance.add_balance(
-            "Tt",
-            val=500.0,
-            lower=1e-4,
-            units="degR",
-            desc="Total temperature",
-            eq_units="degR",
-        )
-        balance.add_balance(
-            "Pt",
-            val=14.696,
-            lower=1e-4,
-            units="psi",
-            desc="Total pressure",
-            eq_units="psi",
-        )
+        balance.add_balance("Tt", val=500.0, lower=1e-4, units="degR", desc="Total temperature", eq_units="degR",)
+        balance.add_balance("Pt", val=14.696, lower=1e-4, units="psi", desc="Total pressure", eq_units="psi",)
         # sub.set_order(['fs','balance'])
 
         newton = conv.nonlinear_solver = om.NewtonSolver()

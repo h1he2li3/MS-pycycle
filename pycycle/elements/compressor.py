@@ -20,16 +20,13 @@ class CorrectedInputsCalc(om.ExplicitComponent):
 
     def setup(self):
         # inputs
-        self.add_input('Tt', val=500., units='degR',
-                       desc='incoming temperature')
+        self.add_input('Tt', val=500., units='degR', desc='incoming temperature')
         self.add_input('Pt', val=14., units='psi', desc='incoming pressure')
         self.add_input('W_in', val=30.0, units='lbm/s', desc='mass flow')
         self.add_input('Nmech', val=1000.0, units='rpm', desc='shaft speed')
         # outputs
-        self.add_output('Wc', val=30.0, units='lbm/s',
-                        desc='corrected mass flow')
-        self.add_output('Nc', val=100., lower=1e-5,
-                        units='rpm', desc='corrected shaft speed')
+        self.add_output('Wc', val=30.0, units='lbm/s', desc='corrected mass flow')
+        self.add_output('Nc', val=100., lower=1e-5, units='rpm', desc='corrected shaft speed')
 
         self.declare_partials('Wc', ['Tt', 'Pt', 'W_in'])
         self.declare_partials('Nc', ['Nmech', 'Tt'])
@@ -94,10 +91,8 @@ class Power(om.ExplicitComponent):
     def setup(self):
         # inputs
         self.add_input('W', val=30.0, units='lbm/s', desc='mass flow')
-        self.add_input('ht_out', val=20.0, units='Btu/lbm',
-                       desc='downstream enthalpy')
-        self.add_input('ht_in', val=10.0, units='Btu/lbm',
-                       desc='incoming enthalpy')
+        self.add_input('ht_out', val=20.0, units='Btu/lbm', desc='downstream enthalpy')
+        self.add_input('ht_in', val=10.0, units='Btu/lbm', desc='incoming enthalpy')
         self.add_input('Nmech', val=1000.0, units='rpm', desc='shaft speed')
         # self.add_input('Tt_in', val=500., units='degR', desc='incoming temperature')
         # outputs
@@ -134,20 +129,14 @@ class BleedsAndPower(om.ExplicitComponent):
     """BleedsAndPower calculates the bleed flows and shaft power for the compressor"""
 
     def initialize(self):
-        self.options.declare('bleed_names', types=Iterable,
-                              desc='list of names for the bleed ports')
+        self.options.declare('bleed_names', types=Iterable, desc='list of names for the bleed ports')
 
     def setup(self):
-        self.add_input('W_in', val=30.0, units='lbm/s',
-                       desc='entrance mass flow')
-        self.add_input('ht_out', val=20.0, units='Btu/lbm',
-                       desc='exit total enthalpy')
-        self.add_input('ht_in', val=10.0, units='Btu/lbm',
-                       desc='entrance total enthalpy')
-        self.add_input('Pt_out', val=20.0, units='psi',
-                       desc='exit total pressure')
-        self.add_input('Pt_in', val=10.0, units='psi',
-                       desc='entrance total pressure')
+        self.add_input('W_in', val=30.0, units='lbm/s', desc='entrance mass flow')
+        self.add_input('ht_out', val=20.0, units='Btu/lbm', desc='exit total enthalpy')
+        self.add_input('ht_in', val=10.0, units='Btu/lbm', desc='entrance total enthalpy')
+        self.add_input('Pt_out', val=20.0, units='psi', desc='exit total pressure')
+        self.add_input('Pt_in', val=10.0, units='psi', desc='entrance total pressure')
         self.add_input('Nmech', val=1000.0, units='rpm', desc='shaft speed')
 
         self.add_output('W_out', shape=1, units='lbm/s', desc='exit mass flow')
@@ -160,19 +149,13 @@ class BleedsAndPower(om.ExplicitComponent):
 
         # bleed inputs and outputs
         for BN in self.options['bleed_names']:
-            self.add_input(BN + ':frac_W', val=0.0,
-                           desc='bleed mass flow fraction (W_bld/W_in)')
-            self.add_input(BN + ':frac_P', val=0.0,
-                           desc='bleed pressure fraction ((P_bld-P_in)/(P_out-P_in))')
-            self.add_input(BN + ':frac_work', val=0.0,
-                           desc='bleed work fraction ((h_bld-h_in)/(h_out-h_in))')
+            self.add_input(BN + ':frac_W', val=0.0, desc='bleed mass flow fraction (W_bld/W_in)')
+            self.add_input(BN + ':frac_P', val=0.0, desc='bleed pressure fraction ((P_bld-P_in)/(P_out-P_in))')
+            self.add_input(BN + ':frac_work', val=0.0, desc='bleed work fraction ((h_bld-h_in)/(h_out-h_in))')
 
-            self.add_output(BN + ':stat:W', shape=1, lower=0.0,
-                            units='lbm/s', desc='bleed mass flow')
-            self.add_output(BN + ':Pt', shape=1, lower=1e-6,
-                            units='psi', desc='bleed total pressure')
-            self.add_output(BN + ':ht', shape=1, units='Btu/lbm',
-                            desc='bleed total enthalpy')
+            self.add_output(BN + ':stat:W', shape=1, lower=0.0, units='lbm/s', desc='bleed mass flow')
+            self.add_output(BN + ':Pt', shape=1, lower=1e-6, units='psi', desc='bleed total pressure')
+            self.add_output(BN + ':ht', shape=1, units='Btu/lbm', desc='bleed total enthalpy')
             # self.add_output(BN+':power', shape=1, desc='bleed power reduction')
 
             self.declare_partials('W_out', BN+':frac_W')
@@ -291,14 +274,11 @@ class EnthalpyRise(om.ExplicitComponent):
 
     def setup(self):
 
-        self.add_input('ideal_ht', val=2.0, units='Btu/lbm',
-                       desc='ideal exit total enthalpy')
-        self.add_input('inlet_ht', val=1.0, units='Btu/lbm',
-                       desc='entrance total enthalpy')
+        self.add_input('ideal_ht', val=2.0, units='Btu/lbm', desc='ideal exit total enthalpy')
+        self.add_input('inlet_ht', val=1.0, units='Btu/lbm', desc='entrance total enthalpy')
         self.add_input('eff', val=0.5, desc='design efficiency')
 
-        self.add_output('ht_out', shape=1, units='Btu/lbm',
-                        desc='exit total enthalpy')
+        self.add_output('ht_out', shape=1, units='Btu/lbm', desc='exit total enthalpy')
 
         self.declare_partials('ht_out', '*')
 
@@ -311,8 +291,7 @@ class EnthalpyRise(om.ExplicitComponent):
 
         J['ht_out', 'ideal_ht'] = 1. / eff
         J['ht_out', 'inlet_ht'] = 1 - 1. / eff
-        J['ht_out', 'eff'] = - (inputs['ideal_ht'] -
-                                inputs['inlet_ht']) * eff**(-2)
+        J['ht_out', 'eff'] = - (inputs['ideal_ht'] - inputs['inlet_ht']) * eff**(-2)
 
 
 class PressureRise(om.ExplicitComponent):
@@ -320,11 +299,9 @@ class PressureRise(om.ExplicitComponent):
 
     def setup(self):
         self.add_input('PR', 3.0, desc="design pressure ratio")
-        self.add_input('Pt_in', 5.0, units='lbf/inch**2',
-                       desc="incomming total pressure")
+        self.add_input('Pt_in', 5.0, units='lbf/inch**2', desc="incomming total pressure")
 
-        self.add_output('Pt_out', shape=1, lower=1e-5,
-                        units='lbf/inch**2', desc="exit total pressure")
+        self.add_output('Pt_out', shape=1, lower=1e-5, units='lbf/inch**2', desc="exit total pressure")
 
         self.declare_partials('Pt_out', '*')
 
@@ -388,15 +365,10 @@ class Compressor(Element):
     """
 
     def initialize(self):
-        self.options.declare('map_data', default=NCP01,
-                              desc='data container for raw compressor map data')
-        self.options.declare('statics', default=True,
-                              desc='If True, calculate static properties.')
-        self.options.declare('bleed_names', types=(list,tuple), desc='list of names for the bleed ports',
-                              default=[])
-        self.options.declare('map_interp_method', default='slinear',
-                              desc='Method to use for map interpolation. \
-                              Options are `slinear`, `cubic`, `quintic`.')
+        self.options.declare('map_data', default=NCP01, desc='data container for raw compressor map data')
+        self.options.declare('statics', default=True, desc='If True, calculate static properties.')
+        self.options.declare('bleed_names', types=(list,tuple), desc='list of names for the bleed ports', default=[])
+        self.options.declare('map_interp_method', default='slinear', desc='Method to use for map interpolation. Options are `slinear`, `cubic`, `quintic`.')
         self.options.declare('map_extrap', default=False, desc='Switch to allow extrapoloation off map')
 
         self.default_des_od_conns = [
@@ -443,46 +415,26 @@ class Compressor(Element):
         flow_in = FlowIn(fl_name='Fl_I')
         self.add_subsystem('flow_in', flow_in, promotes_inputs=['Fl_I:*'])
 
-        self.add_subsystem('corrinputs', CorrectedInputsCalc(),
-                           promotes_inputs=(
-                               'Nmech', ('W_in', 'Fl_I:stat:W'),
-                               ('Pt', 'Fl_I:tot:P'), ('Tt', 'Fl_I:tot:T')),
-                           promotes_outputs=('Nc', 'Wc'))
+        self.add_subsystem('corrinputs', CorrectedInputsCalc(), promotes_inputs=('Nmech', ('W_in', 'Fl_I:stat:W'), ('Pt', 'Fl_I:tot:P'), ('Tt', 'Fl_I:tot:T')), promotes_outputs=('Nc', 'Wc'))
 
-        map_calcs = CompressorMap(map_data=self.options['map_data'], design=design,
-                            interp_method=interp_method, extrap=map_extrap)
-        self.add_subsystem('map', map_calcs,
-                            promotes=['s_Nc','s_eff','s_Wc','s_PR','Nc','Wc',
-                                    'PR','eff','SMN','SMW'])
+        map_calcs = CompressorMap(map_data=self.options['map_data'], design=design, interp_method=interp_method, extrap=map_extrap)
+        self.add_subsystem('map', map_calcs, promotes=['s_Nc','s_eff','s_Wc','s_PR','Nc','Wc','PR','eff','SMN','SMW'])
 
         # Calculate pressure rise across compressor
-        self.add_subsystem('press_rise', PressureRise(), promotes_inputs=[
-                           'PR', ('Pt_in', 'Fl_I:tot:P')])
+        self.add_subsystem('press_rise', PressureRise(), promotes_inputs=['PR', ('Pt_in', 'Fl_I:tot:P')])
 
         # Calculate ideal flow station properties
-        ideal_flow = Thermo(mode='total_SP',
-                            method=thermo_method,
-                            thermo_kwargs={'composition':composition,
-                                           'spec':thermo_data})
-        self.add_subsystem('ideal_flow', ideal_flow,
-                           promotes_inputs=[('S', 'Fl_I:tot:S'),
-                                            ('composition', 'Fl_I:tot:composition')])
+        ideal_flow = Thermo(mode='total_SP', method=thermo_method, thermo_kwargs={'composition':composition, 'spec':thermo_data})
+        self.add_subsystem('ideal_flow', ideal_flow, promotes_inputs=[('S', 'Fl_I:tot:S'), ('composition', 'Fl_I:tot:composition')])
         self.connect("press_rise.Pt_out", "ideal_flow.P")
 
         # Calculate enthalpy rise across compressor
-        self.add_subsystem("enth_rise", EnthalpyRise(),
-                           promotes_inputs=['eff', ('inlet_ht', 'Fl_I:tot:h')])
+        self.add_subsystem("enth_rise", EnthalpyRise(), promotes_inputs=['eff', ('inlet_ht', 'Fl_I:tot:h')])
         self.connect("ideal_flow.h", "enth_rise.ideal_ht")
 
         # Calculate real flow station properties
-        real_flow = Thermo(mode='total_hP', fl_name='Fl_O:tot',
-                                  method=thermo_method,
-                                  thermo_kwargs={'composition':composition,
-                                                 'spec':thermo_data})
-        self.add_subsystem('real_flow', real_flow,
-                           promotes_inputs=[
-                               ('composition', 'Fl_I:tot:composition')],
-                           promotes_outputs=['Fl_O:tot:*'])
+        real_flow = Thermo(mode='total_hP', fl_name='Fl_O:tot', method=thermo_method, thermo_kwargs={'composition':composition, 'spec':thermo_data})
+        self.add_subsystem('real_flow', real_flow, promotes_inputs=[('composition', 'Fl_I:tot:composition')], promotes_outputs=['Fl_O:tot:*'])
         self.connect("enth_rise.ht_out", "real_flow.h")
         self.connect("press_rise.Pt_out", "real_flow.P")
         #clculate Polytropic Efficiency
